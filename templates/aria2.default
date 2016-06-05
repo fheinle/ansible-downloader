@@ -1,0 +1,13 @@
+#{{ ansible_managed }}
+
+ARIA_USER=downloads
+ARIA_HOME=/home/$ARIA_USER
+
+ARIA_PARAMS="--dir=$ARIA_HOME/downloads \
+             --log=$ARIA_HOME/log/log \
+             --enable-rpc \
+             --rpc-allow-origin-all \
+             --rpc-listen-all \
+             --rpc-secret {{ rpc_password }} \
+             --daemon \
+             --al-proxy=http://127.0.0.1:8123"

@@ -1,0 +1,105 @@
+---
+
+- name: install aria2
+  become: true
+  apt:
+    name=aria2
+    update_cache=yes
+    cache_valid_time=3600
+
+- name: add user for downloads
+  become: true
+  user:
+    name=downloads
+    group=shares
+    comment="Aria2 Downloader"
+    state=present
+
+- name: make aria2 configuration and logs directory
+  become: true
+  file:
+    name=/home/downloads/{{ item }}
+    state=directory
+    owner=downloads
+    group=shares
+    mode=0700
+  with_items:
+    - config
+    - log
+
+- name: install aria2 configuration for Debian up to 8
+  become: true
+  template:
+    src=aria2.default
+    dest=/etc/default/aria2
+    owner=root
+    group=root
+    mode=0600
+  notify: restart aria
+  when: ansible_distribution == 'Debian' and ansible_distribution_major_version|int < 8
+
+- name: install aria2 configuration for Debian 8 and above
+  become: true
+  template:
+    src=aria2.conf
+    dest=/home/downloads/config/aria2.conf
+    owner=downloads
+    group=shares
+    mode=0600
+  notify: restart aria
+  when: ansible_distribution == 'Debian' and ansible_distribution_major_version|int > 7
+
+- name: install aria2 init script for SysV (Debian up to 8)
+  become: true
+  copy:
+    src=aria2.sh
+    dest=/etc/init.d/aria2
+    owner=root
+    group=root
+    mode=0744
+  when: ansible_distribution == 'Debian' and ansible_lsb.major_release|int < 8
+  notify: restart aria
+
+- name: install aria2 systemd unit (Debian 8 and above)
+  become: true
+  copy:
+    src=aria2.service
+    dest=/etc/systemd/system/aria2.service
+    owner=root
+    group=root
+    mode=0644
+  when: ansible_distribution == 'Debian' and ansible_lsb.major_release|int > 7
+  notify:
+    - reload daemons
+    - restart aria
+
+- name: enable aria2 daemon on boot
+  become: true
+  service:
+    name=aria2
+    enabled=true
+    state=started
+
+- name: install tor and polipo
+  become: true
+  apt:
+    name={{ item }}
+    update_cache=yes
+    cache_valid_time=3600
+  with_items:
+    - tor
+    - polipo
+
+- name: install polipo configuration
+  become: true
+  copy:
+    src=polipo.conf
+    dest=/etc/polipo/config
+    owner=root
+    group=root
+    mode=0644
+  notify:
+    - restart polipo
+
+- name: install ydl
+  include: ydl.yml

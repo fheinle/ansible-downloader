@@ -1,0 +1,55 @@
+---
+
+- name: install virtualenv
+  become: true
+  apt:
+    name="{{ item }}"
+    state=present
+    update_cache=yes
+    cache_valid_time=3600
+  with_items:
+    - python3-virtualenv
+    - python3-pip
+
+- name: set up virtualenv
+  become: true
+  become_user: downloads
+  pip:
+    virtualenv="/home/downloads/.venv"
+    name="youtube-dl"
+    executable="pip3"
+    virtualenv_python="/usr/bin/python3"
+
+- name: create binary directory for downloader
+  become: true
+  file:
+    name=/home/downloads/bin
+    state=directory
+    owner=downloads
+    group=shares
+    mode=0755
+
+- name: install adapter script
+  become: true
+  copy:
+    src="{{ item }}"
+    dest=/home/downloads/bin
+    owner=downloads
+    group=shares
+    mode=0700
+  with_items:
+    - "ydl.py"
+    - "rpc_server.py"
+
+- name: install rpc server systemd unit
+  become: true
+  copy:
+    src=rpc_server.service
+    dest=/etc/systemd/system/rpc_server.service
+    owner=root
+    group=root
+    mode=0644
+  when: ansible_distribution == 'Debian' and ansible_lsb.major_release|int > 7
+  notify:
+    - reload daemons
+    - restart rpcserver

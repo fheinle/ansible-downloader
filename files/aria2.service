@@ -1,0 +1,13 @@
+[Unit]
+Description=Aria2 Download Manager Daemon
+After=network.target
+
+[Service]
+Type=forking
+ExecStart=/usr/bin/aria2c --conf-path=/home/downloads/config/aria2.conf
+User=downloads
+Group=shares
+WorkingDirectory=/home/downloads
+
+[Install]
+WantedBy=multi-user.target

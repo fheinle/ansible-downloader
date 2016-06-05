@@ -1,0 +1,14 @@
+[Unit]
+Description=Download XMLRPC server
+After=syslog.target
+
+[Service]
+Type=simple
+User=downloads
+Group=shares
+WorkingDirectory=/home/downloads/bin/
+ExecStart=/home/downloads/bin/rpc_server.py
+StandardError=syslog
+
+[Install]
+WantedBy=multi-user.target
