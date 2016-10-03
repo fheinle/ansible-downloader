@@ -79,6 +79,7 @@
     name=aria2
     enabled=true
     state=started
+  when: ansible_distribution == 'Debian'
 
 - name: install tor and polipo
   become: true
