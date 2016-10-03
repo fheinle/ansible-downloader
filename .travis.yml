@@ -1,0 +1,42 @@
+---
+# Contains code from [Jeff Geerling](http://jeffgeerling.com/) (MIT license)
+language: python
+python: "2.7"
+
+before_install:
+  - sudo apt-get update -qq
+
+install:
+  # Install Ansible.
+  - pip install ansible
+
+  # Add ansible.cfg to pick up roles path.
+  - "{ echo '[defaults]'; echo 'roles_path = ../'; } >> ansible.cfg"
+
+script:
+  # Check the role/playbook's syntax.
+  - "ansible-playbook -i tests/inventory tests/test.yml --syntax-check"
+
+  # Run the role/playbook with ansible-playbook.
+  - "ansible-playbook -i tests/inventory tests/test.yml --connection=local"
+
+  # Travis CI's environment requires one _extra_ run for true idempotence :-/.
+  - "ansible-playbook -i tests/inventory tests/test.yml --connection=local"
+
+  # Run the role/playbook again, checking to make sure it's idempotent.
+  - >
+    ansible-playbook -i tests/inventory tests/test.yml --connection=local
+    | grep -q 'changed=0.*failed=0'
+    && (echo 'Idempotence test: pass' && exit 0)
+    || (echo 'Idempotence test: fail' && exit 1)
+
+  # aria2 installed?
+  - test -x /usr/bin/aria2c
+  # Check for downloads user
+  - id downloads > /dev/null
+  # TOR installed?
+  - test -s /usr/sbin/tor
+  - sudo -u downloads test -x /home/downloads/.venv/bin/youtube-dl
+
+notifications:
+  slack: suedseite:y3ypqbTi5Mhr8YGSw5ccVLa2
