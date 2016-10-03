@@ -18,7 +18,6 @@
   pip:
     virtualenv="/home/downloads/.venv"
     name="youtube-dl"
-    executable="pip3"
     virtualenv_python="/usr/bin/python3"
 
 - name: create binary directory for downloader
