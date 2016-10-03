@@ -31,3 +31,13 @@ This role needs to be passed two variables:
     rpc_password: password
 
 for the remote control feature in the included rpc server for starting downloads.
+
+## Build
+
+[![Build Status](https://travis-ci.org/fheinle/ansible-downloader.svg?branch=master)](https://travis-ci.org/fheinle/ansible-downloader)
+
+## Copyright
+
+Copyright (c) 2016 Florian Heinle <launchpad@planet-tiax.de>
+
+MIT License

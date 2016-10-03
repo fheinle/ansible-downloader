@@ -36,7 +36,6 @@ script:
   - id downloads > /dev/null
   # TOR installed?
   - test -s /usr/sbin/tor
-  - sudo -u downloads test -x /home/downloads/.venv/bin/youtube-dl
 
 notifications:
   slack: suedseite:y3ypqbTi5Mhr8YGSw5ccVLa2
