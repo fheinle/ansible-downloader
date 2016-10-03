@@ -110,3 +110,4 @@
 
 - name: install ydl
   include: ydl.yml
+  when: ansible_distribution == 'Debian' or ansible_lsb.major_release|int < 13
