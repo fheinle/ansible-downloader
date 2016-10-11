@@ -11,3 +11,7 @@
 - name: restart polipo
   become: true
   service: name=polipo state=restarted
+
+- name: restart rpcserver
+  become: true
+  service: name=rpc_server state=restarted

@@ -1,5 +1,10 @@
 ---
 
+- name: clear apt cache
+  become: true
+  command: /usr/bin/apt-get clean
+  changed_when: False
+
 - name: install virtualenv
   become: true
   apt:
